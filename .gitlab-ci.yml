@@ -1,0 +1,67 @@
+ image: docker:stable
+ 
+ variables:
+  DOCKER_REGISTRY: 839325387125.dkr.ecr.ap-northeast-2.amazonaws.com
+  AWS_DEFAULT_REGION: ap-northeast-2
+#  APP_NAME: ur1pick
+#  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  IMAGE_NAME: kafe-front
+#  TAG_LATEST: 839325387125.dkr.ecr.ap-northeast-2.amazonaws/$IMAGE_NAME:latest
+#  TAG_COMMIT: 839325387125.dkr.ecr.ap-northeast-2.amazonaws.amazonaws.com/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+  DOCKER_TLS_CERTDIR: ""
+#  ECR_TAG_LATEST: latest
+#  ECR_TAG_COMMIT: $CI_COMMIT_SHORT_SHA
+  
+ services:
+  - docker:dind
+
+ before_script:
+#  - docker info  
+
+ stages :
+  - build
+  - deploy
+
+ build:
+   image: docker:latest
+   stage: build
+   services:
+     - docker:dind
+   script:
+    - echo $CI_COMMIT_SHORT_SHA
+    - echo "Starting to build"
+    - aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 839325387125.dkr.ecr.ap-northeast-2.amazonaws.com
+    - docker build -t kafe-front:$CI_COMMIT_SHORT_SHA .
+    - docker tag kafe-front:$CI_COMMIT_SHORT_SHA 839325387125.dkr.ecr.ap-northeast-2.amazonaws.com/kafe-front:$CI_COMMIT_SHORT_SHA
+    - docker push 839325387125.dkr.ecr.ap-northeast-2.amazonaws.com/kafe-front:$CI_COMMIT_SHORT_SHA
+
+ deploy:
+   image: 
+     name: bitnami/kubectl:latest
+     entrypoint: [""]
+   stage: deploy
+
+   script:
+    - echo "Starting to deploy"
+    - pwd
+    - id
+    - kubectl get no --kubeconfig=/home/ubuntu/.kube/config
+    - kubectl version  --kubeconfig=/home/ubuntu/.kube/config
+#    - kubectl config get-contexts
+#    - kubectl config use-context path/to/agent/repository:agent-name
+#    - kubectl get pods --kubeconfig=/root/.kube/config
+    - kubectl config view 
+    - kubectl config view --kubeconfig=/home/ubuntu/.kube/config
+#    - cd $HOME/.kube
+#    - pwd
+#    - ls -al
+#    - cat config
+#    - kubectl config view --kubeconfig=/home/ubuntu/.kube/config
+#    - kubectl get po -A # --kubeconfig=/home/ubuntu/.kube/config
+#    - sed -i "s/latest/$CI_COMMIT_SHORT_SHA/gi" kafe-front.yaml
+#    - kubectl set image -n kafe deployment/kafe-front 839325387125.dkr.ecr.ap-northeast-2.amazonaws.com/kafe-front:$CI_COMMIT_SHORT_SHA --kubeconfig=/home/ubuntu/.kube/config
+    - kubectl set image -n kafe deployment/kafe-front kafe-front=839325387125.dkr.ecr.ap-northeast-2.amazonaws.com/kafe-front:$CI_COMMIT_SHORT_SHA --kubeconfig=/home/ubuntu/.kube/config
+    - kubectl apply -f kafe-front.yaml --kubeconfig=/home/ubuntu/.kube/config
+#    - kubectl config view --kubeconfig=/root/.kube/config
+#    - kubectl apply -f kafe-front.yaml

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafe-front
+  namespace: kafe
+spec:
+  selector:
+    app: kafe-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafe-front
+  namespace: kafe
+  labels:
+    app: kafe-front
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafe-front
+  template:
+    metadata:
+      labels:
+        app: kafe-front
+    spec:
+      containers:
+      - name: kafe-front
+        image: 839325387125.dkr.ecr.ap-northeast-2.amazonaws.com/kafe-front:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
