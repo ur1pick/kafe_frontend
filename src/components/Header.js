@@ -9,8 +9,8 @@ function Header({user}) {
     let navigate = useNavigate();
 
     const [cookies, removeCookie] = useCookies(['id']);
-    console.log(cookies);
-    console.log(user);
+    // console.log(cookies);
+    // console.log(user);
 
     const btnGoToMain=()=>{
         // navigate("/", {

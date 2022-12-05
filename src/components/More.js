@@ -59,7 +59,7 @@ function More({result,setResult,original}){
 
 
     const btnSearch = () => {
-        console.log(`${original} ${start}~${end} ${pass}`)
+        //console.log(`${original} ${start}~${end} ${pass}`)
         if(custom.length!==0){
             axios.get(`https://kafe.one/api/shorturl/check/${custom}`,{
                 headers: {
@@ -114,13 +114,13 @@ function More({result,setResult,original}){
                                                         authorization: `${cookies.id}`
                                                     },
                                                 }).then(function (res) {
-                                                console.log(res.data);
-                                                console.log(new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString())
+                                                //console.log(res.data);
+                                                //console.log(new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString())
                                                 setResult("");
                                                 setCustomResult(!customResult);
                                                 setCustomUrl(`https://kafe.one/${res.data.data.shortUrl}`);
                                             }).catch(function (err) {
-                                                console.log(err);
+                                                //console.log(err);
                                             });
                                         }
                                     }else{
@@ -137,12 +137,12 @@ function More({result,setResult,original}){
                                                     authorization: `${cookies.id}`
                                                 },
                                             }).then(function (res) {
-                                            console.log(res.data);
+                                            //console.log(res.data);
                                             setResult("");
                                             setCustomResult(!customResult);
                                             setCustomUrl(`https://kafe.one/${res.data.data.shortUrl}`);
                                         }).catch(function (err) {
-                                            console.log(err);
+                                            //console.log(err);
                                         });
                                     }
                                 }
@@ -166,12 +166,12 @@ function More({result,setResult,original}){
                                                     authorization: `${cookies.id}`
                                                 },
                                             }).then(function (res) {
-                                            console.log(res.data);
+                                            //console.log(res.data);
                                             setResult("");
                                             setCustomResult(!customResult);
                                             setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                         }).catch(function (err) {
-                                            console.log(err);
+                                            //console.log(err);
                                         });
                                     }
                                 }else{
@@ -188,12 +188,12 @@ function More({result,setResult,original}){
                                                 authorization: `${cookies.id}`
                                             },
                                         }).then(function (res) {
-                                        console.log(res.data);
+                                        //console.log(res.data);
                                         setResult("");
                                         setCustomResult(!customResult);
                                         setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                     }).catch(function (err) {
-                                        console.log(err);
+                                        //console.log(err);
                                     });
                                 }
                             }
@@ -215,12 +215,12 @@ function More({result,setResult,original}){
                                                 authorization: `${cookies.id}`
                                             },
                                         }).then(function (res) {
-                                        console.log(res.data);
+                                        //console.log(res.data);
                                         setResult("");
                                         setCustomResult(!customResult);
                                         setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                     }).catch(function (err) {
-                                        console.log(err);
+                                        //console.log(err);
                                     });
                                 }
                             }else{
@@ -235,12 +235,12 @@ function More({result,setResult,original}){
                                             authorization: `${cookies.id}`
                                         },
                                     }).then(function (res) {
-                                        console.log(res.data);
+                                        //console.log(res.data);
                                         setResult("");
                                         setCustomResult(!customResult);
                                         setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                     }).catch(function (err) {
-                                        console.log(err);
+                                        //console.log(err);
                                     });
                             }
                         }
@@ -266,12 +266,12 @@ function More({result,setResult,original}){
                                         authorization: `${cookies.id}`
                                     },
                                 }).then(function (res) {
-                                console.log(res.data);
+                                //console.log(res.data);
                                 setResult("");
                                 setCustomResult(!customResult);
                                 setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                             }).catch(function (err) {
-                                console.log(err);
+                                //console.log(err);
                             });
                         }
                     }else{
@@ -286,12 +286,12 @@ function More({result,setResult,original}){
                                     authorization: `${cookies.id}`
                                 },
                             }).then(function (res) {
-                                console.log(res.data);
+                                //console.log(res.data);
                                 setResult("");
                                 setCustomResult(!customResult);
                                 setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                             }).catch(function (err) {
-                                console.log(err);
+                                //console.log(err);
                             });
                     }
                 }else{
@@ -310,12 +310,12 @@ function More({result,setResult,original}){
                                         authorization: `${cookies.id}`
                                     },
                                 }).then(function (res) {
-                                    console.log(res.data);
+                                    //console.log(res.data);
                                     setResult("");
                                     setCustomResult(!customResult);
                                     setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                 }).catch(function (err) {
-                                    console.log(err);
+                                    //console.log(err);
                                 });
                         }
                     }else{

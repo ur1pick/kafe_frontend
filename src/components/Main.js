@@ -27,7 +27,7 @@ function Main() {
         }) // 토큰으로 서버에 인증 요청
             .then((res)=>{
                 setUser(res.data.data.user);
-                console.log(res.data.data.user);
+                //console.log(res.data.data.user);
             })
             .catch((err) => {
                 //console.log(err);
@@ -47,7 +47,7 @@ function Main() {
     }
     const btnRandom = () => {
         if(original.length!==0){
-            console.log(cookies.id)
+            //console.log(cookies.id)
             if((cookies.id==='undefined')||(cookies===null)||(cookies.id===undefined)){
                 axios.post(`https://kafe.one/api/shorturl`, {
                     "customURL": false,
@@ -55,7 +55,7 @@ function Main() {
                     "isCustomURL": false,
                     "originalUrl": `${original}`,
                 }).then(function (res){
-                    console.log(res.data.data.shortUrl);
+                    //console.log(res.data.data.shortUrl);
                     if(res.data.length!==0){
                         setResult(!result);
                         setRandomUrl(`kafe.one/${res.data.data.shortUrl}`);
@@ -63,7 +63,8 @@ function Main() {
                         alert('앗! 예기치 못한 오류가 발생했습니다..!다시 시도해주세요!');
                     }
                 }).catch(function (err){
-                    console.log(err);
+                    //console.log(err);
+                    alert('원주소의 길이가 너무 길어요..!');
                 });
             }else{
                 axios.post(`https://kafe.one/api/shorturl`,
@@ -80,7 +81,7 @@ function Main() {
                     },
                 }
             ).then(function (res){
-                console.log(res.data.data.shortUrl);
+                //console.log(res.data.data.shortUrl);
                 if(res.data.length!==0){
                     setResult(!result);
                     setRandomUrl(`kafe.one/${res.data.data.shortUrl}`);
@@ -88,7 +89,7 @@ function Main() {
                     alert('앗! 예기치 못한 오류가 발생했습니다..!다시 시도해주세요!');
                 }
             }).catch(function (err){
-                console.log(err);
+                //console.log(err);
             });
         }
         } else{
