@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import logo from '../images/kafe_logo_192.png';
-import {Fragment, useRef, useState} from "react";
+import {Fragment, useState} from "react";
 import {
     Button,
     Dialog,
@@ -53,22 +53,29 @@ function Signup(){
 
     const btnSignup=()=>{
         console.log(`${username},${email},${pw},${pwCheck},${isPolicyCheck}`);
-        if(pw!==pwCheck){
-            alert('비밀번호를 다시 한번 확인해주세요!');
+
+        if(isPolicyCheck===false){
+            alert('이용약관에 동의해주세요!');
         }else{
-            if (isPolicyCheck===false){
-                alert('이용약관에 동의해주세요!');
+            if (pw!==pwCheck){
+                alert('비밀번호를 다시 한번 확인해주세요!');
             }else{
-                axios.post(`${window.location.origin}/api/signup`,{
+                axios.post(`https://kafe.one/api/signup`,{
                     email: `${email}`,
                     password: `${pw}`,
                     name: `${username}`
                 }).then(function (res){
-                    console.log(res.data);
+                    //console.log(res.data);
                     alert('입력하신 메일 주소로 인증메일을 전송했습니다. 메일인증을 완료해주세요!')
                     navigate('/')
                 }).catch(function (err){
-		    console.log(err)	
+                    //console.log(err.response.status)
+                    //console.log(err)
+                    if(err.response.status===400){
+                        alert('이미 사용중인 이메일이거나 비밀번호 형식이 잘못 되었습니다!')
+                    }else{
+                        alert('일시적인 오류로 서비스 접속에 실패했습니다. 잠시 후 다시 시도해 주세요.')
+                    }
                     //if(err.response.status===404){
                     //    alert('비밀번호는 대문자, 소문자, 숫자, 특수문자를 모두 포함해야합니다.')
                     //}else{
@@ -123,31 +130,32 @@ function Signup(){
                     focus:border-b-[2px] focus:border-[#FEDB82] focus:ring-0" placeholder="비밀번호" onChange={inputPw}/>
                         <input type="password" className="w-full inline-block my-[20px] font-suit font-medium text-[16px] text-[#000000] border-0 border-b-[2px] border-[#CACACA] bg-[#ffffff]/[0]
                     placeholder:font-suit placeholder:font-medium  placeholder:text-[16px]  placeholder:text-[#767676]
-                    focus:border-b-[2px] focus:border-[#FEDB82] focus:ring-0" placeholder="비밀번호" onChange={inputPwCheck}/>
+                    focus:border-b-[2px] focus:border-[#FEDB82] focus:ring-0" placeholder="비밀번호 확인" onChange={inputPwCheck}/>
                         <div>
                             <input
                                 type="checkbox"
                                 className="rounded bg-white/0 border-[#CACACA] border-2 focus:border-transparent focus:bg-gray-200 text-[#FEDB82]
-                                focus:ring-1 focus:ring-offset-2 focus:ring-[#FEDB82]" onClick={checkPolicy}/>
+                                focus:ring-1 focus:ring-offset-2 focus:ring-[#FEDB82]" onClick={checkPolicy} checked={isPolicyCheck}/>
                             <Fragment>
                                 <span className="ml-2 font-suit font-medium text-[16px] text-[#FEDB82] underline cursor-pointer" onClick={handleOpen}>
                                 이용약관
                                 </span>
-                                <Dialog open={open} handler={handleOpen} size={"md"}>
-                                    <DialogHeader>이용약관</DialogHeader>
-                                    <DialogBody divider className="overflow-y-scroll font-suit font-medium " >
-                                                제1조 목적
-                                                이 약관은 ur1pick(이)가 운영하는 kafe 이하 "kafe"라 한다.
-                                                kafe의 서비스를 이용함에 있어 이용자의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.
-
-                                                제6조 회원가입
-                                                ① 이용자는 "kafe"가 정한 가입 양식에 따라 회원정보를 기입한 후 이 약관에 동의한다는 의사표시를 함으로서 회원가입을 신청합니다.
-                                                ② "kafe"는 제1항과 같이 회원으로 가입할 것을 신청한 이용자 중 다음 각호에 해당하지 않는 한 회원으로 등록합니다.
-                                                1. 가입신청자가 이 약관 제7조 제3항에 의하여 이전에 회원자격을 상실한 적이 있는 경우, 다만 제7조 제3항에 의한 회원자격 상실후 1년이 경과한 자로서 "kafe"의 회원재가입 승낙을 얻은 경우에는 예외로 한다.
-                                                2. 등록 내용에 허위, 기재누락, 오기가 있는 경우
-                                                3. 기타 회원으로 등록하는 것이 "kafe"의 기술상 현저히 지장이 있다고 판단되는 경우
-                                                ③ 회원가입계약의 성립시기는 "kafe"의 승낙이 회원에게 도달한 시점으로 합니다.
-                                                ④ 회원은 제15조제1항에 의한 등록사항에 변경이 있는 경우, 즉시 전자우편 기타 방법으로 "kafe"에 대하여 그 변경사항을 알려야 합니다.
+                                <Dialog open={open} handler={handleOpen} size={"lg"}>
+                                    <DialogHeader className="font-suit font-bold text-[24px]" >이용약관</DialogHeader>
+                                    <DialogBody divider>
+                                        <div className="overflow-y-scroll flex flex-col" >
+                                            <p className="font-suit font-semibold" >제1조 목적</p>
+                                            <p className="font-suit font-normal" >이 약관은 ur1pick(이)가 운영하는 kafe 이하 "kafe"라 한다.</p>
+                                            <p className="font-suit font-normal" >kafe의 서비스를 이용함에 있어 이용자의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.</p>
+                                            <p className="font-suit font-semibold" >제6조 회원가입</p>
+                                            <p className="font-suit font-normal" >① 이용자는 "kafe"가 정한 가입 양식에 따라 회원정보를 기입한 후 이 약관에 동의한다는 의사표시를 함으로서 회원가입을 신청합니다.</p>
+                                            <p className="font-suit font-normal" >② "kafe"는 제1항과 같이 회원으로 가입할 것을 신청한 이용자 중 다음 각호에 해당하지 않는 한 회원으로 등록합니다.</p>
+                                            <p className="font-suit font-normal" >1. 가입신청자가 이 약관 제7조 제3항에 의하여 이전에 회원자격을 상실한 적이 있는 경우, 다만 제7조 제3항에 의한 회원자격 상실후 1년이 경과한 자로서 "kafe"의 회원재가입 승낙을 얻은 경우에는 예외로 한다.</p>
+                                            <p className="font-suit font-normal" >2. 등록 내용에 허위, 기재누락, 오기가 있는 경우</p>
+                                            <p className="font-suit font-normal" >3. 기타 회원으로 등록하는 것이 "kafe"의 기술상 현저히 지장이 있다고 판단되는 경우</p>
+                                            <p className="font-suit font-normal" >③ 회원가입계약의 성립시기는 "kafe"의 승낙이 회원에게 도달한 시점으로 합니다.</p>
+                                            <p className="font-suit font-normal" >④ 회원은 제15조제1항에 의한 등록사항에 변경이 있는 경우, 즉시 전자우편 기타 방법으로 "kafe"에 대하여 그 변경사항을 알려야 합니다.</p>
+                                        </div>
                                     </DialogBody>
                                     <DialogFooter>
                                         <Button
@@ -158,9 +166,10 @@ function Signup(){
                                         >
                                             <span>취소</span>
                                         </Button>
-                                        <Button variant="gradient" color="yellow" onClick={btnConfirm}>
-                                            <span className="text-[#ffffff]  font-suit font-medium ">확인</span>
+                                        <Button variant="filled" onClick={btnConfirm} className="bg-[#FEDB82] shadow-[#FEDB82]/[0.3] hover:shadow-[#FEDB82]/[0.5]">
+                                            <span className="text-[#ffffff] font-suit font-medium" onClick={btnConfirm}>확인</span>
                                         </Button>
+                                        {/*<span className="text-[#ffffff]  font-suit font-medium bg-[#FEDB82]" onClick={btnConfirm}>확인</span>*/}
                                     </DialogFooter>
                                 </Dialog>
                                 <span className=" font-suit font-medium  text-[16px] text-[#6A5440]">에 동의합니다.</span>

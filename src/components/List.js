@@ -3,7 +3,7 @@ import Header from "./Header";
 import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useCookies} from "react-cookie";
-import {React, Fragment, useState, useRef} from "react";
+import {React, Fragment, useState} from "react";
 import {Tooltip} from "@material-tailwind/react";
 import {Modal} from "flowbite-react";
 
@@ -12,11 +12,23 @@ function List() {
     const location = useLocation();
     const user = location.state.user;
     const urlList = location.state.list;
-    //console.log(location.state.user);
+
     const [cookies] = useCookies(['id']);
     const USER_NAME = user.name;
-    //alert(USER_NAME);
-    const total_count = 0;
+
+    function sumCnt(category) {
+        if (Array.isArray(category)) {
+            return category.reduce((prev, current) => prev + current.accessCount, 0);
+        } else {
+            let sum = 0;
+            for (const subCategory of Object.values(category)) {
+                sum += sumCnt(subCategory);
+            }
+            return sum;
+        }
+    }
+
+    let totalCount = sumCnt(urlList);
     let navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [origin, setOrigin] = useState('');
@@ -27,8 +39,8 @@ function List() {
 
     const handleOpen=(item)=>{
         setOpen(!open);
-        console.log(item)
-        axios.get(`/api/shorturl/${item.seq}`,
+        //console.log(item)
+        axios.get(`https://kafe.one/api/shorturl/${item.seq}`,
             {
                 headers: {
                     authorization: `${cookies.id}`
@@ -37,11 +49,14 @@ function List() {
         ).then(function (res){
             console.log(res.data.data.shortUrl)
             setEditItem(res.data.data.shortUrl)
-            console.log(editItem)
+            setStart(res.data.data.shortUrl.startDate)
+            setEnd(res.data.data.shortUrl.endDate)
         }).catch(function (err){
-            console.log(err);
+            //console.log(err);
         });
+
     }
+
     const handleOrigin=(e)=>{
         setOrigin(e.target.value);
     }
@@ -62,85 +77,163 @@ function List() {
         console.log(start)
         console.log(end)
         console.log(pass)
-        if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
-            axios.put(`${window.location.origin}/api/shorturl/${edit.seq}`,
-                {
-                    "endDate": end,
-                    "hasPassword": false,
-                    "originalUrl": origin,
-                    "seq": edit.seq,
-                    "startDate": start
-                },
-                {
-                    headers: {
-                        authorization: `${cookies.id}`
+        if ((origin.length===0)||(origin===null)||(origin.match(/\s/g))) {
+            if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": false,
+                        "originalUrl": `${edit.originalUrl}`,
+                        "seq": edit.seq,
+                        "startDate": start
                     },
-                }).then((res1)=>{
-                console.log(res1);
-                axios.get(`${window.location.origin}/api/shorturl`,
                     {
                         headers: {
                             authorization: `${cookies.id}`
-
                         },
-                    }).then(function (res){
-                    //console.log(res.data.data.shortUrlList);
-                    setOpen(!open)
-                    navigate('/list', {
-                        state: {
-                            user: user,
-                            list: res.data.data.shortUrlList
-                        }
+                    }).then((res1)=>{
+                        console.log(res1);
+                        axios.get(`https://kafe.one/api/shorturl`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+
+                            },
+                        }).then(function (res){
+                        //console.log(res.data.data.shortUrlList);
+                        setOpen(!open)
+                        navigate('/list', {
+                            state: {
+                                user: user,
+                                list: res.data.data.shortUrlList
+                            }
+                        });
+                        setOpen(!open)
+                    }).catch(function (err){
+                        //console.log(err);
                     });
-                    setOpen(!open)
                 }).catch(function (err){
-                    //console.log(err);
+                    console.log(err);
                 });
-            }).catch(function (err){
-                console.log(err);
-            });
+            }else{
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": true,
+                        "originalUrl": `${edit.originalUrl}`,
+                        "password": pass,
+                        "seq": edit.seq,
+                        "startDate": start
+                    },
+                    {
+                        headers: {
+                            authorization: `${cookies.id}`
+                        },
+                    }).then((res1)=>{
+                    console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+
+                            },
+                        }).then(function (res){
+
+                        navigate('/list', {
+                            state: {
+                                user: user,
+                                list: res.data.data.shortUrlList
+                            }
+                        });
+                        setOpen(!open)
+                    }).catch(function (err){
+                        //console.log(err);
+                    });
+                }).catch(function (err){
+                    console.log(err);
+                });
+            }
         }else{
-            axios.put(`${window.location.origin}/api/shorturl/${edit.seq}`,
-                {
-                    "endDate": end,
-                    "hasPassword": true,
-                    "originalUrl": origin,
-                    "password": pass,
-                    "seq": edit.seq,
-                    "startDate": start
-                },
-                {
-                    headers: {
-                        authorization: `${cookies.id}`
+            if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": false,
+                        "originalUrl": origin,
+                        "seq": edit.seq,
+                        "startDate": start
                     },
-                }).then((res1)=>{
-                console.log(res1);
-                axios.get(`${window.location.origin}/api/shorturl`,
                     {
                         headers: {
                             authorization: `${cookies.id}`
-
                         },
-                    }).then(function (res){
+                    }).then((res1)=>{
+                    console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
 
-                    navigate('/list', {
-                        state: {
-                            user: user,
-                            list: res.data.data.shortUrlList
-                        }
+                            },
+                        }).then(function (res){
+                        //console.log(res.data.data.shortUrlList);
+                        setOpen(!open)
+                        navigate('/list', {
+                            state: {
+                                user: user,
+                                list: res.data.data.shortUrlList
+                            }
+                        });
+                        setOpen(!open)
+                    }).catch(function (err){
+                        //console.log(err);
                     });
-                    setOpen(!open)
                 }).catch(function (err){
-                    //console.log(err);
+                    console.log(err);
                 });
-            }).catch(function (err){
-                console.log(err);
-            });
+            }else{
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": true,
+                        "originalUrl": origin,
+                        "password": pass,
+                        "seq": edit.seq,
+                        "startDate": start
+                    },
+                    {
+                        headers: {
+                            authorization: `${cookies.id}`
+                        },
+                    }).then((res1)=>{
+                    console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+
+                            },
+                        }).then(function (res){
+
+                        navigate('/list', {
+                            state: {
+                                user: user,
+                                list: res.data.data.shortUrlList
+                            }
+                        });
+                        setOpen(!open)
+                    }).catch(function (err){
+                        //console.log(err);
+                    });
+                }).catch(function (err){
+                    console.log(err);
+                });
+            }
         }
     }
 
     const handleActivate = (seq) => {
-        axios.put(`${window.location.origin}/api/shorturl/${seq}/active`,
+        axios.put(`https://kafe.one/api/shorturl/${seq}/active`,
             {
                 "active": `${document.getElementById('active').checked}`,
             },
@@ -149,38 +242,38 @@ function List() {
                     authorization: `${cookies.id}`
                 },
             }).then((res1)=>{
-                console.log(res1);
-                axios.get(`${window.location.origin}/api/shorturl`,
-                    {
-                        headers: {
-                            authorization: `${cookies.id}`
-                        },
-                    }).then(function (res){
-                        //console.log(res.data.data.shortUrlList);
-                        navigate('/list', {
-                            state: {
-                                user: user,
-                                list: res.data.data.shortUrlList
-                            }
-                        });
-                    }).catch(function (err){
-                        //console.log(err);
-                    });
+            console.log(res1);
+            axios.get(`https://kafe.one/api/shorturl`,
+                {
+                    headers: {
+                        authorization: `${cookies.id}`
+                    },
+                }).then(function (res){
+                //console.log(res.data.data.shortUrlList);
+                navigate('/list', {
+                    state: {
+                        user: user,
+                        list: res.data.data.shortUrlList
+                    }
+                });
             }).catch(function (err){
                 //console.log(err);
             });
+        }).catch(function (err){
+            //console.log(err);
+        });
     }
 
     const btnList=(seq)=>{
 
-        axios.get(`${window.location.origin}/api/shorturl/${seq}`,
+        axios.get(`https://kafe.one/api/shorturl/${seq}`,
             {
                 headers: {
                     authorization: `${cookies.id}`
                 },
             }
         ).then(function (res){
-            axios.get(`${window.location.origin}/api/statistics/${seq}`,
+            axios.get(`https://kafe.one/api/statistics/${seq}`,
                 {
                     headers: {
                         authorization: `${cookies.id}`
@@ -204,15 +297,15 @@ function List() {
     }
 
     const btnDelete=(item)=>{
-        if (window.confirm(`/${item.shortUrl} \n 해당 단축 URL을 삭제하시겠습니까?`)) {
-            axios.delete(`${window.location.origin}/api/shorturl/${item.seq}`,
+        if (window.confirm(`https://kafe.one/${item.shortUrl} \n 해당 단축 URL을 삭제하시겠습니까?`)) {
+            axios.delete(`https://kafe.one/api/shorturl/${item.seq}`,
                 {
                     headers: {
                         authorization: `${cookies.id}`
                     },
                 }).then((res)=>{
                 console.log(res.data);
-                axios.get(`${window.location.origin}/api/shorturl`,{
+                axios.get(`https://kafe.one/api/shorturl`,{
                     headers: {
                         authorization: `${cookies.id}`
                     },
@@ -243,42 +336,42 @@ function List() {
 
             <div className="flex-1">
                 <div className="mx-7">
-                    <p className="text-[#000000] font-suit font-bold text-[22px] m-8">{`${USER_NAME}`}의 줄인 URL</p>
+                    <p className="text-[#000000] font-suit font-bold text-[22px] m-6">{`${USER_NAME}`}의 줄인 URL</p>
                     <div className="min-h-max px-3 sm:px-6">
                         <div className="overflow-x-scroll sm:overflow-auto">
                             <table className="min-w-full">
                                 <thead className="border-b ">
                                 <tr className="">
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className="font-suit font-semibold text-[18px] py-2 text-center">
                                         종류
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className="font-suit font-semibold text-[18px] py-2 text-center">
                                         단축 URL
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className="font-suit font-semibold text-[18px] py-2 text-center">
                                         활성화
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className=" font-suit font-semibold text-[18px] py-2 text-center">
                                         생성일
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className=" font-suit font-semibold text-[18px] py-2 text-center">
                                         최종 접속일
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className="font-suit font-semibold text-[18px] py-2 text-center">
                                         조회수
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className="font-suit font-semibold text-[18px] py-2 text-center">
                                         수정
                                     </th>
                                     <th scope="col"
-                                        className="font-suit font-bold text-[18px] py-2 text-center">
+                                        className="font-suit font-semibold text-[18px] py-2 text-center">
                                         삭제
                                     </th>
                                 </tr>
@@ -286,25 +379,39 @@ function List() {
                                 <tbody>
                                 {urlList.map((item)=>(
                                     <tr  className="cursor-pointer" >
-                                        <td className="px-3 py-3 text-center" >
+                                        <td className="px-2 py-3 text-center" >
                                             {
                                                 item.isCustomUrl
-                                                    ?<span className="bg-[#95D094] rounded-[15px] px-3 py-[5px] font-suit font-medium text-[18px]">custom</span>
-                                                    :<span className="bg-[#FEDB82] rounded-[15px] px-3 py-[5px] font-suit font-medium text-[18px]">random</span>
+                                                    ?<span className="bg-[#95D094] rounded-[15px] px-3 py-[5px] font-suit font-medium text-[17px]">custom</span>
+                                                    :<span className="bg-[#FEDB82] rounded-[15px] px-3 py-[5px] font-suit font-medium text-[17px]">random</span>
                                             }
                                         </td>
-                                        <td className="flex flex-row justify-center px-4 py-3 text-center" onClick={()=>btnList(item.seq)}>
-                                            <span className="flex font-suit font-medium text-[18px] px-6 py-2 self-center">
-                                                /{item.shortUrl}
-                                                <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-[10px]">
-                                                    <rect y="7" width="5" height="16" fill="#FBBC05"/>
-                                                    <rect x="9" width="5" height="23" fill="#D9D9D9"/>
-                                                    <rect x="9" width="5" height="23" fill="#9FA9FF"/>
-                                                    <rect x="18" y="13" width="5" height="10" fill="#FFAF82"/>
-                                                </svg>
-                                            </span>
+                                        <td className="flex flex-row justify-center px-2 py-3 text-center" onClick={()=>btnList(item.seq)}>
+                                            {
+                                                item.hasPassword
+                                                    ?
+                                                    <span className="flex flex-shrink-0 font-suit font-medium text-[17px] px-4 py-2 self-center">
+                                                        🔒 kafe.one/{item.shortUrl}
+                                                        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-[10px]">
+                                                            <rect y="7" width="5" height="16" fill="#FBBC05"/>
+                                                            <rect x="9" width="5" height="23" fill="#D9D9D9"/>
+                                                            <rect x="9" width="5" height="23" fill="#9FA9FF"/>
+                                                            <rect x="18" y="13" width="5" height="10" fill="#FFAF82"/>
+                                                        </svg>
+                                                    </span>
+                                                    :
+                                                    <span className="flex flex-shrink-0 font-suit font-medium text-[17px] px-4 py-2 self-center">
+                                                        kafe.one/{item.shortUrl}
+                                                        <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-[10px]">
+                                                            <rect y="7" width="5" height="16" fill="#FBBC05"/>
+                                                            <rect x="9" width="5" height="23" fill="#D9D9D9"/>
+                                                            <rect x="9" width="5" height="23" fill="#9FA9FF"/>
+                                                            <rect x="18" y="13" width="5" height="10" fill="#FFAF82"/>
+                                                        </svg>
+                                                    </span>
+                                            }
                                     </td>
-                                    <td className="font-suit font-medium text-[18px] px-6 py-3 text-center" >
+                                    <td className="font-suit font-medium text-[17px] px-6 py-3 text-center" >
                                         <div className="w-fit flex flex-col place-self-center">
                                             <label className=" relative items-center cursor-pointer">
                                                 <input id="active" type="checkbox" className="sr-only peer" onChange={()=>handleActivate(item.seq)} checked={item.isActive}/>
@@ -313,12 +420,16 @@ function List() {
                                             </label>
                                         </div>
                                     </td>
-                                    <td className="font-suit font-medium text-[18px] px-6 py-3 text-center" >
+                                        <td className="font-suit font-medium text-[17px] px-6 py-3 text-center" >
+
                                         {new Date(item.registerDate).toLocaleDateString()}
+
                                     </td>
-                                    <td className="font-suit font-medium text-[18px] px-6 py-3 text-center" >
-                                        {new Date(item.lastAccess).toLocaleDateString()}
+                                    <td className="font-suit font-medium text-[17px] px-6 py-3 text-center" >
+                                            {new Date(item.lastAccess).toLocaleDateString()}
+
                                     </td>
+
                                     <td className="font-suit font-medium text-[18px] px-8 py-3 text-center" >
                                         {item.accessCount}
                                     </td>
@@ -341,13 +452,13 @@ function List() {
                                                                 <label className="text-[#000000] font-suit font-medium text-[18px] text-center mx-[10px]" >시작일 :</label>
                                                                 <input
                                                                     id="originStart" type="date"
-                                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0  font-suit font-medium  text-[16px]" onChange={handleStart}/>
+                                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0  font-suit font-medium  text-[16px]" onChange={handleStart} value={start.split('T')[0]}/>
                                                             </div>
                                                             <div className="text-center place-self-center">
                                                                 <label className="text-[#000000] font-suit font-medium text-[18px] text-center mx-[10px]">만료일 :</label>
                                                                 <input
                                                                     id="originEnd" type="date"
-                                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0 font-suit font-medium text-[16px]" onChange={handleEnd}/>
+                                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0 font-suit font-medium text-[16px]" onChange={handleEnd} value={end.split('T')[0]}/>
                                                             </div>
                                                         </div>
                                                         <div className="col-span-5 text-center place-self-center align-middle">
@@ -377,7 +488,7 @@ function List() {
                     </div>
                 </div>
                 <div className="self-center">
-                    <p className="font-suit font-bold text-[20px] self-center text-center m-12">총 방문자 수 000000</p>
+                    <p className="font-suit font-bold text-[20px] self-center text-center m-12">{`총 방문자 수 ${totalCount}`}</p>
                 </div>
                 {/*Footer*/}
             </div>

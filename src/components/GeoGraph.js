@@ -1,15 +1,12 @@
 import {ZoomableGroup, ComposableMap, Geographies, Geography, Marker} from "react-simple-maps";
-import { csv } from "d3-fetch";
 import { scaleLinear } from "d3-scale";
-import sortBy from "lodash/sortBy";
-import datacsv from '../data/data.csv';
 import {useEffect, useMemo, useState} from "react";
 import {Tooltip} from "@material-tailwind/react";
 function GeoGraph({pos}) {
 
     //지도
     const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/world-continents.json";
-    const [sample, setSample] = useState([]);
+    //const [sample, setSample] = useState([]);
     const [maxValue, setMaxValue] = useState(0);
 
     function csvToJSON(csv_string){
@@ -49,7 +46,7 @@ function GeoGraph({pos}) {
         })
         console.log(max)
         setMaxValue(Math.max(...max));
-    }, []);
+    }, [arr_json]);
 
     const popScale = useMemo(
         () => scaleLinear().domain([0, maxValue]).range([0, 24]),

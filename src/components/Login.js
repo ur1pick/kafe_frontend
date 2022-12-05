@@ -1,16 +1,15 @@
-import kakao from '../images/ic_kakao.svg';
-import google from '../images/ic_google.svg';
+import google from '../images/btnGmail.png';
 import logo from '../images/kafe_logo_192.png';
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
-import { useCookies,Cookies } from 'react-cookie';
+import { useCookies } from 'react-cookie';
 
 function Login(){
 
     const [email,setEmail]= useState('');
     const [pw,setPw]= useState('');
-    const [cookies, setCookie] = useCookies(['id']); // 쿠키 훅
+    const [setCookie] = useCookies(['id']); // 쿠키 훅
 
     let navigate = useNavigate();
     const btnGoToMain=()=>{
@@ -30,17 +29,29 @@ function Login(){
     }
 
     const btnLogin=()=>{
-        axios.post(`${window.location.origin}/api/signin`, {
-            email: `${email}`,
-            password: `${pw}`
-        }).then(function (res){
-            console.log(res.headers.authorization);
-            setCookie('id', res.headers.authorization);// 쿠키에 토큰 저장
-            console.log(cookies);
-            navigate('/')
-        }).catch(function (err){
-            console.log(err);
-        });
+        if((email.length===0)||(email===null)||(email.match(/\s/g))){
+            alert('이메일을 입력해주세요!');
+        }else if((pw.length===0)||(pw===null)||(pw.match(/\s/g))){
+            alert('비밀번호를 입력해주세요!');
+        }else {
+            axios.post(`https://kafe.one/api/signin`, {
+                email: `${email}`,
+                password: `${pw}`
+            }).then(function (res){
+                //console.log(res.headers.authorization);
+                setCookie('id', res.headers.authorization);// 쿠키에 토큰 저장
+                //console.log(cookies);
+                navigate('/')
+            }).catch(function (err){
+                //console.log(err.response);
+                if(err.response.status===401){
+                    alert('등록되지 않은 이메일이거나 비밀번호를 잘못 입력했습니다!')
+                }else{
+                    alert('일시적인 오류로 로그인을 할 수 없습니다. 잠시 후 다시 이용해 주세요!')
+                }
+            });
+        }
+
     }
 
 
@@ -93,24 +104,27 @@ function Login(){
                     placeholder:font-suit placeholder:font-medium  placeholder:text-[16px]  placeholder:text-[#767676]
                     focus:border-b-[2px] focus:border-[#FEDB82] focus:ring-0" placeholder="비밀번호" onChange={inputPw} onKeyPress={keyLogin}/>
 
-                        <p className="my-[20px] py-[8px] rounded-[5px] bg-[#FEDB82] text-[#FFFFFF] font-suit font-bold text-[20px] text-center align-middle cursor-default cursor-pointer" onClick={btnLogin}>로그인</p>
-                        <p className="mt-[30px] mb-[20px] mx-[15px] text-[#6A5440] font-suit font-semibold text-[16px] cursor-default text-center underline cursor-pointer" onClick={btnForget}>비밀번호를 잊으셨나요?</p>
+                        <p className="my-[20px] py-[8px] rounded-[5px] bg-[#FEDB82] text-[#FFFFFF] font-suit font-bold text-[20px] text-center align-middle cursor-pointer" onClick={btnLogin}>로그인</p>
+                        <p className="my-[30px] mx-[15px] text-[#6A5440] font-suit font-semibold text-[16px] text-center underline cursor-pointer" onClick={btnForget}>비밀번호를 잊으셨나요?</p>
+
+                        <img src={google} alt="sign in with Google" className=" block mx-auto cursor-pointer" onClick={btnGoogle}/>
                     </div>
 
-                    <div className="px-[40px] justify-between items-center flex flex-nowrap cursor-default">
-                        <span className="h-[1px] bg-[#767676] block basis-1/4 "></span>
-                        <p className="block text-center font-suit font-medium text-[#767676] text-[16px] basis-1/3">SNS 계정으로 로그인</p>
-                        <span className="h-[1px] bg-[#767676] block basis-1/4 "></span>
-                    </div>
+                    {/*<div className="px-[40px] justify-between items-center flex flex-nowrap cursor-default">*/}
+                    {/*    <span className="h-[1px] bg-[#767676] block basis-1/4 "></span>*/}
+                    {/*    <p className="block text-center font-suit font-medium text-[#767676] text-[16px] basis-1/3">SNS 계정으로 로그인</p>*/}
+                    {/*    <span className="h-[1px] bg-[#767676] block basis-1/4 "></span>*/}
+                    {/*</div>*/}
 
-                    <div className="flex justify-center px-[38px] mt-[22px] px-[40px] pb-[40px]">
-                        <span className="inline-block mx-[12px]">
-                            <img src={kakao} alt="" className="w-[60px] block mx-auto cursor-pointer"/>
-                        </span>
-                        <span className="inline-block mx-[12px]" onClick={btnGoogle}>
-                            <img src={google} alt="" className="w-[60px] block mx-auto cursor-pointer"/>
-                        </span>
-                    </div>
+                    {/*<div className="flex justify-center px-[38px] mt-[22px] px-[40px] pb-[40px]">*/}
+                        {/*<span className="inline-block mx-[12px]">*/}
+                        {/*    <img src={kakao} alt="" className="w-[60px] block mx-auto cursor-pointer"/>*/}
+                        {/*</span>*/}
+                        {/*<span className="inline-block mx-[12px]" >*/}
+                        {/*    <img src={google} alt="" className="w-[60px] block mx-auto cursor-pointer" onClick={btnGoogle}/>*/}
+                        {/*</span>*/}
+
+                    {/*</div>*/}
 
                 </div>
             </div>
