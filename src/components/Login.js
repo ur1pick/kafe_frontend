@@ -46,8 +46,9 @@ function Login(){
                         Authorization: res.headers.authorization
                     }
                 }) // 토큰으로 서버에 인증 요청
-                    .then((res)=>{
-                        if (res.data.data.user.userStatus==="NOT_VERIFIED"){
+                    .then((res1)=>{
+                        console.log(res1.data.data)
+                        if (res1.data.data.user.userStatus==="NOT_VERIFIED"){
                             alert('이메일 인증을 완료해주세요!')
                         }else{
                             setCookie('id', res.headers.authorization);// 쿠키에 토큰 저장
