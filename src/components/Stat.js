@@ -30,7 +30,7 @@ function Stat() {
     const [pass,setPass]=useState('');
     const [editItem,setEditItem]=useState({});
 
-    console.log(stat);
+    //console.log(stat);
 
     let browser = Object.keys(stat.useragent);
     let browserData = Object.values(stat.useragent);
@@ -41,7 +41,7 @@ function Stat() {
 
     //const [active,setActive] = useState(urlInfo.isActive)
     const handleActivate = () => {
-        axios.put(`${window.location.origin}/api/shorturl/${urlInfo.seq}/active`,
+        axios.put(`https://kafe.one/api/shorturl/${urlInfo.seq}/active`,
             {
                 "active": `${document.getElementById('active').checked}`,
             },
@@ -50,21 +50,21 @@ function Stat() {
                     authorization: `${cookies.id}`
                 },
             }).then((res1)=>{
-                console.log(res1);
-                axios.get(`${window.location.origin}/api/shorturl/${urlInfo.seq}`,
+                //console.log(res1);
+                axios.get(`https://kafe.one/api/shorturl/${urlInfo.seq}`,
                     {
                         headers: {
                             authorization: `${cookies.id}`
                         },
                     }).then(function (res2){
-                        console.log(res2.data.data.shortUrl)
-                    axios.get(`${window.location.origin}/api/statistics/${urlInfo.seq}`,
+                        //console.log(res2.data.data.shortUrl)
+                    axios.get(`https://kafe.one/api/statistics/${urlInfo.seq}`,
                         {
                             headers: {
                                 authorization: `${cookies.id}`
                             },
                         }).then(function (res3){
-                            console.log(res3.data.data.statistics);
+                            //console.log(res3.data.data.statistics);
                             navigate('/stat', {
                                 state: {
                                     user:user,
@@ -75,13 +75,13 @@ function Stat() {
                             //window.location.replace("/stat")
                             //setActive(location.urlInfo.isActive)
                         }).catch(function (err){
-                            console.log(err);
+                            //console.log(err);
                         });
                     }).catch(function (err){
-                        console.log(err);
+                        //console.log(err);
                     });
             }).catch((err)=>{
-                console.log(err);
+                //console.log(err);
             })
     }
 
@@ -160,49 +160,76 @@ function Stat() {
     };
 
 
-    const btnDelete=(seq)=>{
-        axios.delete(`${window.location.origin}/api/shorturl/${seq}`,
+
+
+    const nullPie = {
+        labels: ['NoData'],
+        datasets: [
             {
-                headers: {
-                    authorization: `${cookies.id}`
-                },
-            }).then((res)=>{
-            console.log(res.data);
-            axios.get(`${window.location.origin}/api/shorturl`,{
-                headers: {
-                    authorization: `${cookies.id}`
-                },
-            }).then(function (res){
-                //console.log(res.data.data.shortUrlList);
-                navigate('/list', {
-                    state: {
-                        user: user,
-                        list: res.data.data.shortUrlList
-                    }
+                label: 'NoData',
+                data: [1],
+                backgroundColor: [
+                    '#CACACA',
+                ],
+                borderColor: [
+                    '#CACACA',
+
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+
+    const btnDelete=(urlInfo)=>{
+        if (window.confirm(`kafe.one/${urlInfo.shortUrl} \n 해당 단축 URL을 삭제하시겠습니까?`)) {
+            axios.delete(`https://kafe.one/api/shorturl/${urlInfo.seq}`,
+                {
+                    headers: {
+                        authorization: `${cookies.id}`
+                    },
+                }).then((res)=>{
+                //console.log(res.data);
+                axios.get(`https://kafe.one/api/shorturl`,{
+                    headers: {
+                        authorization: `${cookies.id}`
+                    },
+                }).then(function (res){
+                    //console.log(res.data.data.shortUrlList);
+                    navigate('/list', {
+                        state: {
+                            user: user,
+                            list: res.data.data.shortUrlList
+                        }
+                    });
+                }).catch(function (err){
+                    //console.log(err);
                 });
-            }).catch(function (err){
+            }).catch((err)=>{
                 //console.log(err);
-            });
-        }).catch((err)=>{
-            console.log(err);
-        })
+            })
+        }else{
+            window.location.replace("/stat")
+        }
     }
 
     const handleOpen=(item)=>{
         setOpen(!open);
-        console.log(item)
-        axios.get(`${window.location.origin}/api/shorturl/${item.seq}`,
+        //console.log(item)
+        axios.get(`https://kafe.one/api/shorturl/${item.seq}`,
             {
                 headers: {
                     authorization: `${cookies.id}`
                 },
             }
         ).then(function (res){
-            console.log(res.data.data.shortUrl)
+            //console.log(res.data.data.shortUrl)
             setEditItem(res.data.data.shortUrl)
-            console.log(editItem)
+            //console.log(editItem)
+            setStart(res.data.data.shortUrl.startDate)
+            setEnd(res.data.data.shortUrl.endDate)
         }).catch(function (err){
-            console.log(err);
+            //console.log(err);
         });
     }
     const handleOrigin=(e)=>{
@@ -219,88 +246,210 @@ function Stat() {
     }
 
     const btnEdit = (edit) => {
-        console.log(edit)
+        // console.log(edit)
+        //
+        // console.log(origin)
+        // console.log(start)
+        // console.log(end)
+        // console.log(pass)
 
-        console.log(origin)
-        console.log(start)
-        console.log(end)
-        console.log(pass)
+        if ((origin.length===0)||(origin===null)||(origin.match(/\s/g))) {
+            if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": false,
+                        "originalUrl": `${edit.originalUrl}`,
+                        "seq": edit.seq,
+                        "startDate": start
+                    },
+                    {
+                        headers: {
+                            authorization: `${cookies.id}`
+                        },
+                    }).then((res1)=>{
+                        //console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl/${edit.seq}`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+                            },
+                        }
+                    ).then(function (res){
+                        axios.get(`https://kafe.one/api/statistics/${edit.seq}`,
+                            {
+                                headers: {
+                                    authorization: `${cookies.id}`
+                                },
+                            }
+                        ).then(function (resp){
+                            //console.log(resp.data.data.statistics);
 
-        // if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
-        //     axios.put(`${window.location.origin}/api/shorturl/${edit.seq}`,
-        //         {
-        //             "endDate": end,
-        //             "hasPassword": false,
-        //             "originalUrl": origin,
-        //             "seq": edit.seq,
-        //             "startDate": start
-        //         },
-        //         {
-        //             headers: {
-        //                 authorization: `${cookies.id}`
-        //             },
-        //         }).then((res1)=>{
-        //         console.log(res1);
-        //         axios.get(`${window.location.origin}/api/shorturl`,
-        //             {
-        //                 headers: {
-        //                     authorization: `${cookies.id}`
-        //
-        //                 },
-        //             }).then(function (res){
-        //             //console.log(res.data.data.shortUrlList);
-        //             setOpen(!open)
-        //             navigate('/list', {
-        //                 state: {
-        //                     user: user,
-        //                     list: res.data.data.shortUrlList
-        //                 }
-        //             });
-        //             setOpen(!open)
-        //         }).catch(function (err){
-        //             //console.log(err);
-        //         });
-        //     }).catch(function (err){
-        //         console.log(err);
-        //     });
-        // }else{
-        //     axios.put(`${window.location.origin}/api/shorturl/${edit.seq}`,
-        //         {
-        //             "endDate": end,
-        //             "hasPassword": true,
-        //             "originalUrl": origin,
-        //             "password": pass,
-        //             "seq": edit.seq,
-        //             "startDate": start
-        //         },
-        //         {
-        //             headers: {
-        //                 authorization: `${cookies.id}`
-        //             },
-        //         }).then((res1)=>{
-        //         console.log(res1);
-        //         axios.get(`${window.location.origin}/api/shorturl`,
-        //             {
-        //                 headers: {
-        //                     authorization: `${cookies.id}`
-        //
-        //                 },
-        //             }).then(function (res){
-        //
-        //             navigate('/list', {
-        //                 state: {
-        //                     user: user,
-        //                     list: res.data.data.shortUrlList
-        //                 }
-        //             });
-        //             setOpen(!open)
-        //         }).catch(function (err){
-        //             //console.log(err);
-        //         });
-        //     }).catch(function (err){
-        //         console.log(err);
-        //     });
-        // }
+                            navigate('/stat', {
+                                state: {
+                                    user:user,
+                                    stat: resp.data.data.statistics,
+                                    urlInfo: res.data.data.shortUrl
+                                }
+                            });
+                            setOpen(!open)
+                        }).catch(function (err){
+                            //console.log(err);
+                        });
+                    }).catch(function (err){
+                        //console.log(err);
+                    });
+                }).catch(function (err){
+                    //console.log(err);
+                });
+            }else{
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": true,
+                        "originalUrl": `${edit.originalUrl}`,
+                        "password": pass,
+                        "seq": edit.seq,
+                        "startDate": start
+                    },
+                    {
+                        headers: {
+                            authorization: `${cookies.id}`
+                        },
+                    }).then((res1)=>{
+                    //console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl/${edit.seq}`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+                            },
+                        }
+                    ).then(function (res){
+                        axios.get(`https://kafe.one/api/statistics/${edit.seq}`,
+                            {
+                                headers: {
+                                    authorization: `${cookies.id}`
+                                },
+                            }
+                        ).then(function (resp){
+                           // console.log(resp.data.data.statistics);
+                            navigate('/stat', {
+                                state: {
+                                    user:user,
+                                    stat: resp.data.data.statistics,
+                                    urlInfo: res.data.data.shortUrl
+                                }
+                            });
+                            setOpen(!open)
+                        }).catch(function (err){
+                           // console.log(err);
+                        });
+                    }).catch(function (err){
+                       // console.log(err);
+                    });
+                }).catch(function (err){
+                   // console.log(err);
+                });
+            }
+        }else{
+            if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": false,
+                        "originalUrl": origin,
+                        "seq": edit.seq,
+                        "startDate": start
+                    },
+                    {
+                        headers: {
+                            authorization: `${cookies.id}`
+                        },
+                    }).then((res1)=>{
+                    //console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl/${edit.seq}`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+                            },
+                        }
+                    ).then(function (res){
+                        axios.get(`https://kafe.one/api/statistics/${edit.seq}`,
+                            {
+                                headers: {
+                                    authorization: `${cookies.id}`
+                                },
+                            }
+                        ).then(function (resp){
+                            //console.log(resp.data.data.statistics);
+                            navigate('/stat', {
+                                state: {
+                                    user:user,
+                                    stat: resp.data.data.statistics,
+                                    urlInfo: res.data.data.shortUrl
+                                }
+                            });
+                            setOpen(!open)
+                        }).catch(function (err){
+                            //console.log(err);
+                        });
+                    }).catch(function (err){
+                       // console.log(err);
+                    });
+                }).catch(function (err){
+                   // console.log(err);
+                });
+            }else{
+                axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
+                    {
+                        "endDate": end,
+                        "hasPassword": true,
+                        "originalUrl": origin,
+                        "password": pass,
+                        "seq": edit.seq,
+                        "startDate": start
+                    },
+                    {
+                        headers: {
+                            authorization: `${cookies.id}`
+                        },
+                    }).then((res1)=>{
+                    //console.log(res1);
+                    axios.get(`https://kafe.one/api/shorturl/${edit.seq}`,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+                            },
+                        }
+                    ).then(function (res){
+                        axios.get(`https://kafe.one/api/statistics/${edit.seq}`,
+                            {
+                                headers: {
+                                    authorization: `${cookies.id}`
+                                },
+                            }
+                        ).then(function (resp){
+                            //console.log(resp.data.data.statistics);
+                            navigate('/stat', {
+                                state: {
+                                    user:user,
+                                    stat: resp.data.data.statistics,
+                                    urlInfo: res.data.data.shortUrl
+                                }
+                            });
+
+                            setOpen(!open)
+                        }).catch(function (err){
+                            //console.log(err);
+                        });
+                    }).catch(function (err){
+                        //console.log(err);
+                    });
+                }).catch(function (err){
+                   // console.log(err);
+                });
+            }
+        }
     }
 
 
@@ -314,10 +463,15 @@ function Stat() {
                     ?
                     <div className="p-6 flex flex-row ">
                         <span className="align-middle text-center bg-[#FEDB82] rounded-[20px] px-[10px] py-[3px] font-suit font-bold text-[18px]">random</span>
-                        <span className="align-middle px-[15px] font-suit font-semibold text-[22px]">/{urlInfo.shortUrl}</span>
+                        {
+                            urlInfo.hasPassword
+                                ?<span className="align-middle px-[15px] font-suit font-semibold text-[22px]">🔒 kafe.one/{urlInfo.shortUrl}</span>
+                                :<span className="align-middle px-[15px] font-suit font-semibold text-[22px]">kafe.one/{urlInfo.shortUrl}</span>
+                        }
+
                         {/*<p className="align-middle px-[10px] font-suit font-semibold text-[24px]" >✏️</p>*/}
                         <Fragment >
-                            <p className="align-middle px-[10px] font-suit font-semibold text-[24px]" onClick={()=>handleOpen(urlInfo)}>✏️</p>
+                            <p className="align-middle px-[10px] font-suit font-semibold text-[24px] cursor-pointer" onClick={()=>handleOpen(urlInfo)}>✏️</p>
                             <Modal show={open} size="2xl" popup={true} onClose={handleOpen} item={urlInfo}>
                                 <Modal.Header/>
                                 <Modal.Body >
@@ -333,13 +487,13 @@ function Stat() {
                                                 <label className="text-[#000000] font-suit font-medium text-[18px] text-center mx-[10px]" >시작일 :</label>
                                                 <input
                                                     id="originStart" type="date"
-                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0  font-suit font-medium  text-[16px]" onChange={handleStart}/>
+                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0  font-suit font-medium  text-[16px]" onChange={handleStart} value={start.split('T')[0]}/>
                                             </div>
                                             <div className="text-center place-self-center">
                                                 <label className="text-[#000000] font-suit font-medium text-[18px] text-center mx-[10px]">만료일 :</label>
                                                 <input
                                                     id="originEnd" type="date"
-                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0 font-suit font-medium text-[16px]" onChange={handleEnd}/>
+                                                    className="rounded-md bg-[#F8F8F8] border-0 focus:ring-0 font-suit font-medium text-[16px]" onChange={handleEnd} value={end.split('T')[0]}/>
                                             </div>
                                         </div>
                                         <div className="col-span-5 text-center place-self-center align-middle">
@@ -357,14 +511,18 @@ function Stat() {
                             </Modal>
                         </Fragment>
 
-                        <p className="align-middle px-[10px] font-suit font-semibold text-[24px]" onClick={()=>btnDelete(urlInfo.seq)}>🗑️</p>
+                        <p className="align-middle px-[10px] font-suit font-semibold text-[24px] cursor-pointer" onClick={()=>btnDelete(urlInfo)}>🗑️</p>
                     </div>
                     :
                     <div className="p-6 flex flex-row ">
                         <span className="align-middle text-center bg-[#95D094] rounded-[15px] px-[10px] py-[5px] font-suit font-bold text-[20px]">custom</span>
-                        <span className="align-middle px-[15px] font-suit font-semibold text-[22px]">/{urlInfo.shortUrl}</span>
+                        {
+                            urlInfo.hasPassword
+                                ?<span className="align-middle px-[15px] font-suit font-semibold text-[22px]">🔒 kafe.one/{urlInfo.shortUrl}</span>
+                                :<span className="align-middle px-[15px] font-suit font-semibold text-[22px]">kafe.one/{urlInfo.shortUrl}</span>
+                        }
                         <p className="align-middle px-[10px] font-suit font-semibold text-[24px]" >✏️</p>
-                        <p className="align-middle px-[10px] font-suit font-semibold text-[24px]" onClick={()=>btnDelete(urlInfo.seq)}>🗑️</p>
+                        <p className="align-middle px-[10px] font-suit font-semibold text-[24px] cursor-pointer" onClick={()=>btnDelete(urlInfo)}>🗑️</p>
                     </div>
                 }
                 <div className="grid grid-rows-2 grid-cols-3 ">
@@ -405,13 +563,25 @@ function Stat() {
                     <GeoGraph pos={stat.coordinates}/>
                     <div className="grid grid-cols-3 gap-12 mb-6">
                         <div>
-                            <PieGraph data={browserPie}/>
+                            {
+                                browserData.length===0
+                                    ? <PieGraph data={nullPie}/>
+                                    :<PieGraph data={browserPie}/>
+                            }
                         </div>
                         <div>
-                            <PieGraph data={devicePie}/>
+                            {
+                                deviceData.length===0
+                                    ? <PieGraph data={nullPie}/>
+                                    :<PieGraph data={devicePie}/>
+                            }
                         </div>
                         <div>
-                            <PieGraph data={snsPie}/>
+                            {
+                                snsData.length===0
+                                    ? <PieGraph data={nullPie}/>
+                                    :<PieGraph data={snsPie}/>
+                            }
                         </div>
                     </div>
 

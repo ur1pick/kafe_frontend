@@ -3,7 +3,7 @@ import logo from '../images/kafe_logo_192.png';
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
-import { useCookies,Cookies } from 'react-cookie';
+import { useCookies } from 'react-cookie';
 
 function Login(){
 
@@ -38,10 +38,28 @@ function Login(){
                 email: `${email}`,
                 password: `${pw}`
             }).then(function (res){
-                //console.log(res.headers.authorization);
-                setCookie('id', res.headers.authorization);// 쿠키에 토큰 저장
+                //console.log(res);
                 //console.log(cookies);
-                navigate('/')
+
+                axios.get(`https://kafe.one/api/user`,{
+                    headers: {
+                        Authorization: res.headers.authorization
+                    }
+                }) // 토큰으로 서버에 인증 요청
+                    .then((res)=>{
+                        if (res.data.data.user.userStatus==="NOT_VERIFIED"){
+                            alert('이메일 인증을 완료해주세요!')
+                        }else{
+                            setCookie('id', res.headers.authorization);// 쿠키에 토큰 저장
+                            navigate('/')
+                        }
+                        //console.log(res.data.data.user);
+                    })
+                    .catch((err) => {
+                        //console.log(err);
+                        setCookie('id', undefined);
+                    }); // 로그인 체크 함수
+
             }).catch(function (err){
                 //console.log(err.response);
                 if(err.response.status===401){

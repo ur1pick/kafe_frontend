@@ -48,50 +48,56 @@ function Main() {
     const btnRandom = () => {
         if(original.length!==0){
             //console.log(cookies.id)
-            if((cookies.id==='undefined')||(cookies===null)||(cookies.id===undefined)){
-                axios.post(`https://kafe.one/api/shorturl`, {
-                    "customURL": false,
-                    "hasPassword": false,
-                    "isCustomURL": false,
-                    "originalUrl": `${original}`,
-                }).then(function (res){
-                    //console.log(res.data.data.shortUrl);
-                    if(res.data.length!==0){
-                        setResult(!result);
-                        setRandomUrl(`kafe.one/${res.data.data.shortUrl}`);
-                    }else{
-                        alert('앗! 예기치 못한 오류가 발생했습니다..!다시 시도해주세요!');
-                    }
-                }).catch(function (err){
-                    //console.log(err);
-                    alert('원주소의 길이가 너무 길어요..!');
-                });
+            let Urlregex = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+            // url일 경우 true, 아닐 경우 false
+            if(Urlregex.test(original)){
+                if((cookies.id==='undefined')||(cookies===null)||(cookies.id===undefined)){
+                    axios.post(`https://kafe.one/api/shorturl`, {
+                        "customURL": false,
+                        "hasPassword": false,
+                        "isCustomURL": false,
+                        "originalUrl": `${original}`,
+                    }).then(function (res){
+                        //console.log(res.data.data.shortUrl);
+                        if(res.data.length!==0){
+                            setResult(!result);
+                            setRandomUrl(`kafe.one/${res.data.data.shortUrl}`);
+                        }else{
+                            alert('앗! 예기치 못한 오류가 발생했습니다..!다시 시도해주세요!');
+                        }
+                    }).catch(function (err){
+                        //console.log(err);
+                        alert('원주소의 길이가 너무 길어요..!');
+                    });
+                }else {
+                    axios.post(`https://kafe.one/api/shorturl`,
+                        {
+                            "customURL": false,
+                            "hasPassword": false,
+                            "isCustomURL": false,
+                            "originalUrl": `${original}`,
+                        }
+                        ,
+                        {
+                            headers: {
+                                authorization: `${cookies.id}`
+                            },
+                        }
+                    ).then(function (res) {
+                        //console.log(res.data.data.shortUrl);
+                        if (res.data.length !== 0) {
+                            setResult(!result);
+                            setRandomUrl(`kafe.one/${res.data.data.shortUrl}`);
+                        } else {
+                            alert('앗! 예기치 못한 오류가 발생했습니다..!다시 시도해주세요!');
+                        }
+                    }).catch(function (err) {
+                        //console.log(err);
+                    });
+                }
             }else{
-                axios.post(`https://kafe.one/api/shorturl`,
-                {
-                    "customURL": false,
-                    "hasPassword": false,
-                    "isCustomURL": false,
-                    "originalUrl": `${original}`,
-                }
-                ,
-                {
-                    headers: {
-                        authorization: `${cookies.id}`
-                    },
-                }
-            ).then(function (res){
-                //console.log(res.data.data.shortUrl);
-                if(res.data.length!==0){
-                    setResult(!result);
-                    setRandomUrl(`kafe.one/${res.data.data.shortUrl}`);
-                }else{
-                    alert('앗! 예기치 못한 오류가 발생했습니다..!다시 시도해주세요!');
-                }
-            }).catch(function (err){
-                //console.log(err);
-            });
-        }
+                alert('올바른 URL 형식이 아닙니다! 원주소를 확인해주세요!');
+            }
         } else{
             alert('단축할 URL을 입력해주세요!');
         }

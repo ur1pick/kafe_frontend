@@ -85,16 +85,70 @@ function More({result,setResult,original}){
 
     const btnCustom = () => {
         if(original.length!==0){
-            if(isCustom){
-                if(custom.length===0){
-                    alert('단축 URL을 입력해주세요!')
-                }else{
-                    if(isDuplicate){
-                        alert('이미 사용중인 단축 URL입니다!');
+            let Urlregex = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+            if(Urlregex.test(original)){
+                if(isCustom){
+                    if(custom.length===0){
+                        alert('단축 URL을 입력해주세요!')
                     }else{
-                        if(activate){
-                            if(start.length===0||end.length===0){
-                                if (window.confirm('시작일과 만료일을 설정하지 않으시면 단축 URL은 생성일로부터 30일동안 사용가능합니다!')) {
+                        if(isDuplicate){
+                            alert('이미 사용중인 단축 URL입니다!');
+                        }else{
+                            if(activate){
+                                if(start.length===0||end.length===0){
+                                    if (window.confirm('시작일과 만료일을 설정하지 않으시면 단축 URL은 생성일로부터 30일동안 사용가능합니다!')) {
+                                        if(isPass){
+                                            if(pass.length===0){
+                                                alert('비밀번호를 입력해주세요!');
+                                            }else{
+                                                axios.post(`https://kafe.one/api/shorturl`,
+                                                    {
+                                                        "originalUrl": `${original}`,
+                                                        "isCustomURL": isCustom,
+                                                        "shortUrl": `${custom}`,
+                                                        "startDate": `${start}`,
+                                                        "endDate": `${end}`,
+                                                        "hasPassword": isPass,
+                                                        "password": `${pass}`,
+                                                    },
+                                                    {
+                                                        headers: {
+                                                            authorization: `${cookies.id}`
+                                                        },
+                                                    }).then(function (res) {
+                                                    //console.log(res.data);
+                                                    //console.log(new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString())
+                                                    setResult("");
+                                                    setCustomResult(!customResult);
+                                                    setCustomUrl(`https://kafe.one/${res.data.data.shortUrl}`);
+                                                }).catch(function (err) {
+                                                    //console.log(err);
+                                                });
+                                            }
+                                        }else{
+                                            axios.post(`https://kafe.one/api/shorturl`,
+                                                {
+                                                    "originalUrl": `${original}`,
+                                                    "isCustomURL": isCustom,
+                                                    "shortUrl": `${custom}`,
+                                                    "startDate": `${start}`,
+                                                    "endDate": `${end}`,
+                                                },
+                                                {
+                                                    headers: {
+                                                        authorization: `${cookies.id}`
+                                                    },
+                                                }).then(function (res) {
+                                                //console.log(res.data);
+                                                setResult("");
+                                                setCustomResult(!customResult);
+                                                setCustomUrl(`https://kafe.one/${res.data.data.shortUrl}`);
+                                            }).catch(function (err) {
+                                                //console.log(err);
+                                            });
+                                        }
+                                    }
+                                }else{
                                     if(isPass){
                                         if(pass.length===0){
                                             alert('비밀번호를 입력해주세요!');
@@ -115,10 +169,9 @@ function More({result,setResult,original}){
                                                     },
                                                 }).then(function (res) {
                                                 //console.log(res.data);
-                                                //console.log(new Date(new Date().setMonth(new Date().getMonth()+1)).toISOString())
                                                 setResult("");
                                                 setCustomResult(!customResult);
-                                                setCustomUrl(`https://kafe.one/${res.data.data.shortUrl}`);
+                                                setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                             }).catch(function (err) {
                                                 //console.log(err);
                                             });
@@ -140,7 +193,7 @@ function More({result,setResult,original}){
                                             //console.log(res.data);
                                             setResult("");
                                             setCustomResult(!customResult);
-                                            setCustomUrl(`https://kafe.one/${res.data.data.shortUrl}`);
+                                            setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
                                         }).catch(function (err) {
                                             //console.log(err);
                                         });
@@ -150,14 +203,12 @@ function More({result,setResult,original}){
                                 if(isPass){
                                     if(pass.length===0){
                                         alert('비밀번호를 입력해주세요!');
-                                    }else{
+                                    }else {
                                         axios.post(`https://kafe.one/api/shorturl`,
                                             {
                                                 "originalUrl": `${original}`,
                                                 "isCustomURL": isCustom,
                                                 "shortUrl": `${custom}`,
-                                                "startDate": `${start}`,
-                                                "endDate": `${end}`,
                                                 "hasPassword": isPass,
                                                 "password": `${pass}`,
                                             },
@@ -179,9 +230,7 @@ function More({result,setResult,original}){
                                         {
                                             "originalUrl": `${original}`,
                                             "isCustomURL": isCustom,
-                                            "shortUrl": `${custom}`,
-                                            "startDate": `${start}`,
-                                            "endDate": `${end}`,
+                                            "shortUrl": `${custom}`
                                         },
                                         {
                                             headers: {
@@ -197,119 +246,28 @@ function More({result,setResult,original}){
                                     });
                                 }
                             }
-                        }else{
-                            if(isPass){
-                                if(pass.length===0){
-                                    alert('비밀번호를 입력해주세요!');
-                                }else {
-                                    axios.post(`https://kafe.one/api/shorturl`,
-                                        {
-                                            "originalUrl": `${original}`,
-                                            "isCustomURL": isCustom,
-                                            "shortUrl": `${custom}`,
-                                            "hasPassword": isPass,
-                                            "password": `${pass}`,
-                                        },
-                                        {
-                                            headers: {
-                                                authorization: `${cookies.id}`
-                                            },
-                                        }).then(function (res) {
-                                        //console.log(res.data);
-                                        setResult("");
-                                        setCustomResult(!customResult);
-                                        setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
-                                    }).catch(function (err) {
-                                        //console.log(err);
-                                    });
-                                }
-                            }else{
+                        }
+                    }
+                }else{
+                    if(activate){
+                        if(isPass){
+                            if(pass.length===0){
+                                alert('비밀번호를 입력해주세요!');
+                            }else {
+
                                 axios.post(`https://kafe.one/api/shorturl`,
                                     {
                                         "originalUrl": `${original}`,
-                                        "isCustomURL": isCustom,
-                                        "shortUrl": `${custom}`
+                                        "startDate": `${start}`,
+                                        "endDate": `${end}`,
+                                        "hasPassword": isPass,
+                                        "password": `${pass}`,
                                     },
                                     {
                                         headers: {
                                             authorization: `${cookies.id}`
                                         },
                                     }).then(function (res) {
-                                        //console.log(res.data);
-                                        setResult("");
-                                        setCustomResult(!customResult);
-                                        setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
-                                    }).catch(function (err) {
-                                        //console.log(err);
-                                    });
-                            }
-                        }
-                    }
-                }
-            }else{
-                if(activate){
-                    if(isPass){
-                        if(pass.length===0){
-                            alert('비밀번호를 입력해주세요!');
-                        }else {
-
-                            axios.post(`https://kafe.one/api/shorturl`,
-                                {
-                                    "originalUrl": `${original}`,
-                                    "startDate": `${start}`,
-                                    "endDate": `${end}`,
-                                    "hasPassword": isPass,
-                                    "password": `${pass}`,
-                                },
-                                {
-                                    headers: {
-                                        authorization: `${cookies.id}`
-                                    },
-                                }).then(function (res) {
-                                //console.log(res.data);
-                                setResult("");
-                                setCustomResult(!customResult);
-                                setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
-                            }).catch(function (err) {
-                                //console.log(err);
-                            });
-                        }
-                    }else{
-                        axios.post(`https://kafe.one/api/shorturl`,
-                            {
-                                "originalUrl": `${original}`,
-                                "startDate": `${start}`,
-                                "endDate": `${end}`
-                            },
-                            {
-                                headers: {
-                                    authorization: `${cookies.id}`
-                                },
-                            }).then(function (res) {
-                                //console.log(res.data);
-                                setResult("");
-                                setCustomResult(!customResult);
-                                setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
-                            }).catch(function (err) {
-                                //console.log(err);
-                            });
-                    }
-                }else{
-                    if(isPass){
-                        if(pass.length===0){
-                            alert('비밀번호를 입력해주세요!');
-                        }else {
-                            axios.post(`https://kafe.one/api/shorturl`,
-                                {
-                                    "originalUrl": `${original}`,
-                                    "hasPassword": isPass,
-                                    "password": `${pass}`,
-                                },
-                                {
-                                    headers: {
-                                        authorization: `${cookies.id}`
-                                    },
-                                }).then(function (res) {
                                     //console.log(res.data);
                                     setResult("");
                                     setCustomResult(!customResult);
@@ -317,12 +275,60 @@ function More({result,setResult,original}){
                                 }).catch(function (err) {
                                     //console.log(err);
                                 });
+                            }
+                        }else{
+                            axios.post(`https://kafe.one/api/shorturl`,
+                                {
+                                    "originalUrl": `${original}`,
+                                    "startDate": `${start}`,
+                                    "endDate": `${end}`
+                                },
+                                {
+                                    headers: {
+                                        authorization: `${cookies.id}`
+                                    },
+                                }).then(function (res) {
+                                //console.log(res.data);
+                                setResult("");
+                                setCustomResult(!customResult);
+                                setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
+                            }).catch(function (err) {
+                                //console.log(err);
+                            });
                         }
                     }else{
-                        alert('사용자 지정 옵션을 선택하지 않으셨어요!')
+                        if(isPass){
+                            if(pass.length===0){
+                                alert('비밀번호를 입력해주세요!');
+                            }else {
+                                axios.post(`https://kafe.one/api/shorturl`,
+                                    {
+                                        "originalUrl": `${original}`,
+                                        "hasPassword": isPass,
+                                        "password": `${pass}`,
+                                    },
+                                    {
+                                        headers: {
+                                            authorization: `${cookies.id}`
+                                        },
+                                    }).then(function (res) {
+                                    //console.log(res.data);
+                                    setResult("");
+                                    setCustomResult(!customResult);
+                                    setCustomUrl(`kafe.one/${res.data.data.shortUrl}`);
+                                }).catch(function (err) {
+                                    //console.log(err);
+                                });
+                            }
+                        }else{
+                            alert('사용자 지정 옵션을 선택하지 않으셨어요!')
+                        }
                     }
                 }
+            }else{
+                alert('올바른 URL 형식이 아닙니다! 원주소를 확인해주세요!');
             }
+
         } else{
             alert('단축할 긴URL을 입력해주세요!');
         }

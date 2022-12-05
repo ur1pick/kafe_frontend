@@ -94,7 +94,7 @@ function Header({user}) {
                         ?
                         <div>
                             <button className="mx-[15px] px-4 text-[#81664D] font-suit font-bold  text-[17px] cursor-pointer" onClick={btnGoToLogin}>로그인</button>
-                            <button className="py-[6px] px-3 rounded-[8px] bg-[#FEDB82] text-[#FFFFFF] font-suit font-extrabold text-[13px] cursor-pointer" onClick={btnGoToSignup}>회원가입</button>
+                            <button className="py-[6px] px-3 rounded-[8px] bg-[#FEDB82] text-[#FFFFFF] font-suit font-extrabold text-[15px] cursor-pointer" onClick={btnGoToSignup}>회원가입</button>
                         </div>
                         :
                         <div>

@@ -47,7 +47,7 @@ function List() {
                 },
             }
         ).then(function (res){
-            console.log(res.data.data.shortUrl)
+            //console.log(res.data.data.shortUrl)
             setEditItem(res.data.data.shortUrl)
             setStart(res.data.data.shortUrl.startDate)
             setEnd(res.data.data.shortUrl.endDate)
@@ -71,12 +71,12 @@ function List() {
     }
 
     const btnEdit = (edit) => {
-        console.log(edit)
-
-        console.log(origin)
-        console.log(start)
-        console.log(end)
-        console.log(pass)
+        // console.log(edit)
+        //
+        // console.log(origin)
+        // console.log(start)
+        // console.log(end)
+        // console.log(pass)
         if ((origin.length===0)||(origin===null)||(origin.match(/\s/g))) {
             if ((pass.length===0)||(pass===null)||(pass.match(/\s/g))){
                 axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
@@ -92,7 +92,7 @@ function List() {
                             authorization: `${cookies.id}`
                         },
                     }).then((res1)=>{
-                        console.log(res1);
+                        //console.log(res1);
                         axios.get(`https://kafe.one/api/shorturl`,
                         {
                             headers: {
@@ -113,7 +113,7 @@ function List() {
                         //console.log(err);
                     });
                 }).catch(function (err){
-                    console.log(err);
+                    //console.log(err);
                 });
             }else{
                 axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
@@ -130,7 +130,7 @@ function List() {
                             authorization: `${cookies.id}`
                         },
                     }).then((res1)=>{
-                    console.log(res1);
+                    //console.log(res1);
                     axios.get(`https://kafe.one/api/shorturl`,
                         {
                             headers: {
@@ -150,7 +150,7 @@ function List() {
                         //console.log(err);
                     });
                 }).catch(function (err){
-                    console.log(err);
+                    //console.log(err);
                 });
             }
         }else{
@@ -168,7 +168,7 @@ function List() {
                             authorization: `${cookies.id}`
                         },
                     }).then((res1)=>{
-                    console.log(res1);
+                    //console.log(res1);
                     axios.get(`https://kafe.one/api/shorturl`,
                         {
                             headers: {
@@ -189,7 +189,7 @@ function List() {
                         //console.log(err);
                     });
                 }).catch(function (err){
-                    console.log(err);
+                    //console.log(err);
                 });
             }else{
                 axios.put(`https://kafe.one/api/shorturl/${edit.seq}`,
@@ -206,7 +206,7 @@ function List() {
                             authorization: `${cookies.id}`
                         },
                     }).then((res1)=>{
-                    console.log(res1);
+                    //console.log(res1);
                     axios.get(`https://kafe.one/api/shorturl`,
                         {
                             headers: {
@@ -226,7 +226,7 @@ function List() {
                         //console.log(err);
                     });
                 }).catch(function (err){
-                    console.log(err);
+                    //console.log(err);
                 });
             }
         }
@@ -242,7 +242,7 @@ function List() {
                     authorization: `${cookies.id}`
                 },
             }).then((res1)=>{
-            console.log(res1);
+            //console.log(res1);
             axios.get(`https://kafe.one/api/shorturl`,
                 {
                     headers: {
@@ -280,7 +280,7 @@ function List() {
                     },
                 }
             ).then(function (resp){
-                console.log(resp.data.data.statistics);
+                //console.log(resp.data.data.statistics);
                 navigate('/stat', {
                     state: {
                         user:user,
@@ -289,10 +289,10 @@ function List() {
                     }
                 });
             }).catch(function (err){
-                console.log(err);
+                //console.log(err);
             });
         }).catch(function (err){
-            console.log(err);
+            //console.log(err);
         });
     }
 
@@ -304,7 +304,7 @@ function List() {
                         authorization: `${cookies.id}`
                     },
                 }).then((res)=>{
-                console.log(res.data);
+                //console.log(res.data);
                 axios.get(`https://kafe.one/api/shorturl`,{
                     headers: {
                         authorization: `${cookies.id}`
@@ -321,7 +321,7 @@ function List() {
                     //console.log(err);
                 });
             }).catch((err)=>{
-                console.log(err);
+                //console.log(err);
             })
         }else{
             window.location.replace("/list")

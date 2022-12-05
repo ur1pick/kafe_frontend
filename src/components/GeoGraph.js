@@ -54,7 +54,7 @@ function GeoGraph({pos}) {
     );
 
     return (
-        <ComposableMap projectionConfig={{ rotate: [-10, 0, 0] }}>
+        <ComposableMap >
             <ZoomableGroup center={[0, 0]} zoom={1}>
                 <Geographies geography={geoUrl} className="h-[300px]">
                     {({ geographies }) =>
