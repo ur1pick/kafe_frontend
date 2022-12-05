@@ -3,13 +3,13 @@ import logo from '../images/kafe_logo_192.png';
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
-import { useCookies } from 'react-cookie';
+import { useCookies,Cookies } from 'react-cookie';
 
 function Login(){
 
     const [email,setEmail]= useState('');
     const [pw,setPw]= useState('');
-    const [setCookie] = useCookies(['id']); // 쿠키 훅
+    const [cookies, setCookie] = useCookies(['id']); // 쿠키 훅
 
     let navigate = useNavigate();
     const btnGoToMain=()=>{
